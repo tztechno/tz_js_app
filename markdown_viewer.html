@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Markdown Viewer</h1>
+    <input type="file" id="file-input" accept=".md">
+    <textarea id="markdown-input" placeholder="Enter your markdown text here..."></textarea>
+    <div id="output"></div>
+
+    <!-- Marked.jsライブラリをCDNから読み込む -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const markdownText = e.target.result;
+                    document.getElementById('markdown-input').value = markdownText;
+                    const htmlContent = marked.parse(markdownText);
+                    document.getElementById('output').innerHTML = htmlContent;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        document.getElementById('markdown-input').addEventListener('input', function () {
+            const markdownText = this.value;
+            const htmlContent = marked.parse(markdownText);
+            document.getElementById('output').innerHTML = htmlContent;
+        });
+    </script>
+</body>
+
+</html>
