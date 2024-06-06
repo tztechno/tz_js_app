@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garbage Collection Schedule</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1 class="my-5">Garbage Collection Schedule</h1>
+        <div class="form-group">
+            <label for="datepicker">Select Date:</label>
+            <input type="text" class="form-control" id="datepicker">
+        </div>
+        <div id="garbageInfo" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap Datepicker JavaScript -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datepicker').datepicker({
+                format: 'yyyy-mm-dd', // 日付の表示フォーマット
+                autoclose: true, // 日付を選択するとカレンダーが自動的に閉じる
+                todayHighlight: true, // 今日の日付を強調表示する
+                show: true // カレンダーを最初から開いた状態にする
+            }).on('changeDate', function (e) {
+                var selectedDate = e.date; // 選択された日付を取得
+                var year = selectedDate.getFullYear(); // 年
+                var month = selectedDate.getMonth() + 1; // 月 (1-12)
+                var dayOfWeek = selectedDate.getDay(); // 曜日 (0-6, 0が日曜日)
+                var dayOfMonth = selectedDate.getDate(); // 月の日 (1-31)
+
+                var count = 0;
+                for (var i = 1; i <= dayOfMonth; i++) {
+                    var tempDate = new Date(year, month - 1, i);
+                    if (tempDate.getDay() === dayOfWeek) {
+                        count++;
+                    }
+                }
+                //selectedDate.toLocaleDateString() + " : " +
+                var garbageInfo = year + "年" + month + "月の" + count + "回目の" + getDayOfWeekText(dayOfWeek) + "曜日";
+
+                // ゴミ出しのパターン
+                if (dayOfWeek === 1) {
+                    garbageInfo += "<br>燃えるゴミの日です。";
+                } else if (dayOfWeek === 2 && (count === 2 || count === 4)) {
+                    garbageInfo += "<br>ペットボトルの日です。";
+                }
+
+                $('#garbageInfo').html(garbageInfo);
+            });
+
+            function getDayOfWeekText(dayOfWeek) {
+                var daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
+                return daysOfWeek[dayOfWeek];
+            }
+        });
+    </script>
+
+</body>
+
+</html>
