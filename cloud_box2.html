@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> MINIMAL </title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Datepicker CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        rel="stylesheet">
+
+    <style>
+        #imageContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .canvasCell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid black;
+        }
+
+        .myCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@IshiiStpete" />
+    <meta name="twitter:title" content="clouds around japan">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/tz_js_20240310_cloud/main/cloud.png">
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group date" id="datepicker">
+                    <input type="text" class="form-control" placeholder="Select Date">
+                    <div class="input-group-append">
+                        <span class="input-group-text">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-control" id="timepicker">
+                    <!-- Time options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button id="startSlideshow" class="btn btn-primary">Start Slideshow</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageContainer" class="mt-4">
+        <div class="canvasCell">
+            <canvas id="myCanvas0" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas1" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas2" class="myCanvas"></canvas>
+        </div>
+        <div class="canvasCell">
+            <canvas id="myCanvas3" class="myCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap Datepicker JS -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize datepicker
+            $('#datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            }).on('changeDate', updateImages);
+
+            // Populate timepicker with hour options
+            for (let i = 0; i < 24; i++) {
+                const hour = ('0' + i).slice(-2);
+                $('#timepicker').append(`<option value="${hour}">${hour}:00</option>`);
+            }
+
+            // Add event listener for timepicker
+            $('#timepicker').on('change', updateImages);
+
+            // Initialize with today's date and current hour
+            const today = new Date();
+            $('#datepicker').datepicker('setDate', today);
+            $('#timepicker').val(('0' + today.getHours()).slice(-2));
+
+            // Function to update images based on selected date and time
+            function updateImages() {
+                const selectedDate = $('#datepicker').datepicker('getDate');
+                const selectedHour = $('#timepicker').val();
+
+                const year = selectedDate.getFullYear();
+                const month = ('0' + (selectedDate.getMonth() + 1)).slice(-2);
+                const day = ('0' + selectedDate.getDate()).slice(-2);
+                const time = selectedHour + '0000';
+                const basetime = year + month + day + time;
+                const validtime = basetime;
+
+                const imageUrls = [
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
+                    `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
+                ];
+
+                imageUrls.forEach((imageUrl, index) => {
+                    const canvas = document.getElementById(`myCanvas${index}`);
+                    const ctx = canvas.getContext('2d');
+
+                    // キャンバスサイズを設定
+                    canvas.width = canvas.clientWidth;
+                    canvas.height = canvas.clientHeight;
+
+                    // 画像を描画
+                    const img = new Image();
+                    img.onload = function () {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    };
+                    img.src = imageUrl;
+                });
+            }
+
+            // Function to start the slideshow
+            $('#startSlideshow').on('click', function () {
+                const selectedDate = $('#datepicker').datepicker('getDate');
+                const selectedHour = $('#timepicker').val();
+
+                const year = selectedDate.getFullYear();
+                const month = ('0' + (selectedDate.getMonth() + 1)).slice(-2);
+                const day = ('0' + selectedDate.getDate()).slice(-2);
+                const time = selectedHour + '0000';
+
+                let currentDate = new Date(year, selectedDate.getMonth(), day);
+                let counter = 0;
+
+                function loadNextImage() {
+                    if (counter >= 6) return;
+
+                    const nextYear = currentDate.getFullYear();
+                    const nextMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+                    const nextDay = ('0' + currentDate.getDate()).slice(-2);
+                    const basetime = nextYear + nextMonth + nextDay + time;
+                    const validtime = basetime;
+
+                    const imageUrls = [
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/2.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/6/3.jpg`,
+                        `https://www.jma.go.jp/bosai/himawari/data/satimg/${basetime}/fd/${validtime}/B03/ALBD/3/7/3.jpg`,
+                    ];
+
+                    imageUrls.forEach((imageUrl, index) => {
+                        const canvas = document.getElementById(`myCanvas${index}`);
+                        const ctx = canvas.getContext('2d');
+
+                        // キャンバスサイズを設定
+                        canvas.width = canvas.clientWidth;
+                        canvas.height = canvas.clientHeight;
+
+                        // 画像を描画
+                        const img = new Image();
+                        img.onload = function () {
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        };
+                        img.src = imageUrl;
+                    });
+
+                    // Move to the next day and increment the counter
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    counter++;
+
+                    // Wait 1 second before loading the next image
+                    setTimeout(loadNextImage, 1000);
+                }
+
+                // Start the slideshow
+                loadNextImage();
+            });
+
+            // Initial image load
+            updateImages();
+        });
+    </script>
+</body>
+
+</html>
