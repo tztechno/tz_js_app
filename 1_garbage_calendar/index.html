@@ -15,9 +15,9 @@
 <body>
 
     <div class="container">
-        <h1 class="my-5">Garbage Collection Schedule</h1>
+        <h1 class="my-5">ゴミ回収カレンダー</h1>
         <div class="form-group">
-            <label for="datepicker">Select Date:</label>
+            <label for="datepicker">日付を選択</label>
             <input type="text" class="form-control" id="datepicker">
         </div>
         <div id="garbageInfo" class="mt-3"></div>
@@ -56,11 +56,22 @@
                 var garbageInfo = year + "年" + month + "月の" + count + "回目の" + getDayOfWeekText(dayOfWeek) + "曜日";
 
                 // ゴミ出しのパターン
-                if (dayOfWeek === 1) {
-                    garbageInfo += "<br>燃えるゴミの日です。";
-                } else if (dayOfWeek === 2 && (count === 2 || count === 4)) {
-                    garbageInfo += "<br>ペットボトルの日です。";
-                }
+                if (dayOfWeek === 2) {
+                    garbageInfo += "<br>燃やすごみ";}
+                else if (dayOfWeek === 5) {
+                    garbageInfo += "<br>燃やすごみ";}
+                else if (dayOfWeek === 1) {
+                    garbageInfo += "<br>プラスチック類";}
+                else if (dayOfWeek === 2) {
+                    garbageInfo += "<br>かん・びん";}
+                else if (dayOfWeek === 3 && (count === 2 || count === 4)) {
+                    garbageInfo += "<br>紙・布";}
+                else if (dayOfWeek === 4 && (count === 1 || count === 3)) {
+                    garbageInfo += "<br>ペットボトル";}
+                else if (dayOfWeek === 4 && (count === 2 || count === 4)) {
+                    garbageInfo += "<br>小型不燃ごみ";}
+                else if (dayOfWeek === 3 && (count === 1 || count === 3)) {
+                    garbageInfo += "<br>小型不燃ごみ";}
 
                 $('#garbageInfo').html(garbageInfo);
             });
